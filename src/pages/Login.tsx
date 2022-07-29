@@ -1,28 +1,32 @@
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import '../css/antd.css'
-import styled from "styled-components"
-
-
-const CustomForm = styled(Form)`
-    width:300px;
-`
-
-const FlexDiv = styled.div`
-    width:100vw;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-`
-
-const CustomButton = styled(Button)`
-    width:100%;
-`
+import { CustomForm, CustomButton, FlexDiv, Form, Input } from '../components/presenter/loginForm';
+import { useRecoilState } from 'recoil';
+import { todoListState, userState } from '../recoil/atom';
+import { useState } from 'react';
+import { useRecoilTransactionObserver_UNSTABLE, useGotoRecoilSnapshot } from 'recoil';
 
 function Login() {
-    const onFinish = (values: any) => {
-        console.log('Received values of form: ', values);
+    const [snapshots, setSnapshots] = useState<any>([]);
+
+    useRecoilTransactionObserver_UNSTABLE(({ snapshot }) => {
+        setSnapshots([...snapshots, snapshot]);
+    });
+
+    const gotoSnapshot = useGotoRecoilSnapshot();
+
+    const [user, setUser] = useRecoilState(userState);
+    const [todolist, setTodolist] = useRecoilState(todoListState);
+
+    const onFinish = (value: any) => {
+        console.log('Received values of form: ', value.username);
+
+        if (user.includes(value.username) === false)
+            setUser(user.concat(value.username));
+
+        setTodolist({ ...todolist, userIndex: user.indexOf(value.username) });
+
+        gotoSnapshot(snapshots);
     };
 
     return (
@@ -38,16 +42,6 @@ function Login() {
                     rules={[{ required: true, message: 'Please input your Username!' }]}
                 >
                     <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-                </Form.Item>
-                <Form.Item
-                    name="password"
-                    rules={[{ required: true, message: 'Please input your Password!' }]}
-                >
-                    <Input
-                        prefix={<LockOutlined className="site-form-item-icon" />}
-                        type="password"
-                        placeholder="Password"
-                    />
                 </Form.Item>
                 <Form.Item>
                     <CustomButton type="primary" htmlType="submit" className="login-form-button">

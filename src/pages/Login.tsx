@@ -1,34 +1,21 @@
 import { UserOutlined } from '@ant-design/icons';
 import '../css/antd.css'
-import { CustomForm, CustomButton, FlexDiv, Form, Input } from '../components/presenter/loginForm';
+import { CustomForm, CustomButton, FlexDiv, Form, Input } from '../components/presenter/customAntd';
 import { useRecoilState } from 'recoil';
-import { todoListState, userState } from '../recoil/atom';
-import { useState } from 'react';
-import { useRecoilTransactionObserver_UNSTABLE, useGotoRecoilSnapshot } from 'recoil';
+import { userState } from '../recoil/atom';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const [snapshots, setSnapshots] = useState<any>([]);
-
-    useRecoilTransactionObserver_UNSTABLE(({ snapshot }) => {
-        setSnapshots([...snapshots, snapshot]);
-    });
-
-    const gotoSnapshot = useGotoRecoilSnapshot();
-
+    let navigate = useNavigate();
     const [user, setUser] = useRecoilState(userState);
-    const [todolist, setTodolist] = useRecoilState(todoListState);
 
     const onFinish = (value: any) => {
         console.log('Received values of form: ', value.username);
+        setUser(value.username);
 
-        if (user.includes(value.username) === false)
-            setUser(user.concat(value.username));
-
-        setTodolist({ ...todolist, userIndex: user.indexOf(value.username) });
-
-        gotoSnapshot(snapshots);
+        navigate("/choiceDate");
     };
-
+    
     return (
         <FlexDiv>
             <CustomForm

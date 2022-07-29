@@ -1,8 +1,8 @@
 import { atom } from "recoil";
 
-export const userState = atom<String[]>({
+export const userState = atom<String>({
     key: 'userState',
-    default: [],
+    default: '',
 })
 
 export const todoListState = atom<{ userIndex: number, todoList: String[] }>({
